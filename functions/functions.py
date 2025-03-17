@@ -29,6 +29,7 @@ def timer_decorator(func):
     return wrapper
 
 
+@timer_decorator
 def process_auth_type(apps, args=None, confluence=None, confluence_page_id=None):
     saml_apps, oauth_apps = categorize_apps(apps)
     if args.test:
@@ -106,6 +107,7 @@ def update_confluence(confluence=None, confluence_page_id=None, title=None, tabl
     )
 
 
+@timer_decorator
 def document_enterprise_apps(apps, args=None, confluence=None, confluence_page_id=None):
     app_table = []
     for app in apps:

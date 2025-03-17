@@ -29,10 +29,11 @@ async def get_entraid_enterprise_apps(graph_client=None):
     return enterpriseapps
 
 
-@timer_decorator
-async def audit_entraid(graph_client=None, confluence=None, args=None):
+
+def audit_entraid(graph_client=None, confluence=None, args=None):
     # enterpriseapps = await graph_client.get_all_enterprise_apps()
-    enterpriseapps = await get_entraid_enterprise_apps(graph_client=graph_client)
+
+    enterpriseapps = asyncio.run(get_entraid_enterprise_apps(graph_client=graph_client))
     process_auth_type(
         enterpriseapps,
         args=args,
@@ -48,7 +49,7 @@ async def audit_entraid(graph_client=None, confluence=None, args=None):
     )
 
 
-async def main():
+def main():
     parser = argparse.ArgumentParser(
         prog="PIM EntraID Role Sync",
         description="Sync EntraID Role Assignments from Azure PIM to Confluence",
@@ -69,8 +70,8 @@ async def main():
         azure_client_secret=azure_client_secret,
     )
     confluence = Confluence(url=confluence_url, token=confluence_token)
-    await audit_entraid(graph_client=graph_client, confluence=confluence, args=args)
+    audit_entraid(graph_client=graph_client, confluence=confluence, args=args)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
