@@ -41,7 +41,6 @@ class GraphAPI:
         )
         eapps = []
         logger.debug("Getting first page of all enterprise apps")
-        # result = await self.graph_client.eapps.get()
         result = await self.graph_client.applications.get(
             request_configuration=request_configuration
         )
@@ -54,3 +53,6 @@ class GraphAPI:
             ).get(request_configuration=request_configuration)
             eapps.extend(result.value)
         return eapps
+
+    async def get_app_by_id(self, app_id):
+        return await self.graph_client.applications.by_application_id(app_id).get()

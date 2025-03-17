@@ -65,7 +65,6 @@ def categorize_apps(apps):
         app = app.__dict__
         if "optional_claims" in app and app["optional_claims"]:
             optional_claims = app["optional_claims"].__dict__
-            from pprint import pprint
 
             if len(app["owners"]) > 0:
                 owners = ", ".join(process_owners(app["owners"]))
@@ -113,9 +112,16 @@ def document_enterprise_apps(apps, args=None, confluence=None, confluence_page_i
     for app in apps:
         app = app.__dict__
         if "optional_claims" in app and app["optional_claims"]:
-            oauthapp = True
+            optional_claims = app["optional_claims"].__dict__
+            if (
+                "saml2_token" in optional_claims
+                and len(optional_claims["saml2_token"]) > 0
+            ):
+                sso = "SAML"
+            else:
+                sso = "Oauth"
         else:
-            oauthapp = False
+            sso = False
         if len(app["owners"]) > 0:
             owners = ", ".join(process_owners(app["owners"]))
         else:
@@ -126,16 +132,20 @@ def document_enterprise_apps(apps, args=None, confluence=None, confluence_page_i
                 "AppID": app["app_id"],
                 "Owner": owners,
                 "Created": app["created_date_time"],
-                "SSO": oauthapp,
+                "SSO": sso,
             }
         )
 
     if args.test:
         logger.info("Test Mode: Skipping Confluence Update")
     else:
-        update_confluence(
+        confluence_update_page(
             confluence=confluence,
-            confluence_page_id=confluence_page_id,
-            table=app_table,
             title="Enterprise App Overview",
+            parent_id=confluence_page_id,
+            representation="storage",
+            table=app_table,
+            full_width=False,
+            escape_table=True,
+            body_header=f"Total Enterprise Apps: {len(app_table)}",
         )
