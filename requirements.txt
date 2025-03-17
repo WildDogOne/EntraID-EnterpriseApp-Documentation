@@ -1,0 +1,10 @@
+azure-identity
+azure-mgmt-authorization
+azure-mgmt-subscription
+tabulate
+msgraph-sdk
+atlassian-python-api
+pandas
+lxml
+kestra
+azure-mgmt-resourcegraph

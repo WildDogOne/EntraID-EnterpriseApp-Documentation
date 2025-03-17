@@ -1,0 +1,17 @@
+# Confluence Config
+confluence_url = "https://confluence.corporate.test"
+confluence_token = "123456"
+confluence_page_id = "123456"
+
+
+azure_subscription_exclusions = ["Developer"]
+azure_subscription_id_exclustions = []
+
+# Azure Config
+azure_tenant_id = (
+    "123456"  # Paste your own tenant ID here
+)
+azure_client_id = "123456"  # Paste your own app ID here
+azure_client_secret = (
+    "123456"  # Paste your own app secret here
+)
