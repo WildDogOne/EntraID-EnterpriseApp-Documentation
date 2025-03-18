@@ -65,7 +65,7 @@ def categorize_apps(apps):
         app = app.__dict__
         if "optional_claims" in app and app["optional_claims"]:
             optional_claims = app["optional_claims"].__dict__
-
+            identifier_uris = ", ".join(app["identifier_uris"])
             if len(app["owners"]) > 0:
                 owners = ", ".join(process_owners(app["owners"]))
             else:
@@ -80,6 +80,7 @@ def categorize_apps(apps):
                         "Application": app["display_name"],
                         "AppID": app["app_id"],
                         "Owner": owners,
+                        "Identifier URI": identifier_uris,
                     }
                 )
             else:
@@ -89,6 +90,7 @@ def categorize_apps(apps):
                         "Application": app["display_name"],
                         "AppID": app["app_id"],
                         "Owner": owners,
+                        "Identifier URI": identifier_uris,
                     }
                 )
     return saml_apps, oauth_apps
@@ -129,10 +131,12 @@ def document_enterprise_apps(apps, args=None, confluence=None, confluence_page_i
         app_table.append(
             {
                 "Application": app["display_name"],
-                "AppID": app["app_id"],
                 "Owner": owners,
                 "Created": app["created_date_time"],
                 "SSO": sso,
+                "AppID": app["app_id"],
+                "Url": app["web"].home_page_url,
+                "Identifier URI": ", ".join(app["identifier_uris"]),
             }
         )
 
