@@ -63,16 +63,25 @@ def categorize_apps(apps):
     oauth_apps = []
     for app in apps:
         app = app.__dict__
-        if "optional_claims" in app and app["optional_claims"]:
+        if len(app["owners"]) > 0:
+            owners = ", ".join(process_owners(app["owners"]))
+        else:
+            owners = None
+        identifier_uris = ", ".join(app["identifier_uris"])
+        if "saml" in identifier_uris:
+            saml_apps.append(
+                {
+                    "Application": app["display_name"],
+                    "AppID": app["app_id"],
+                    "Owner": owners,
+                    "Identifier URI": identifier_uris,
+                }
+            )
+        elif "optional_claims" in app and app["optional_claims"]:
             optional_claims = app["optional_claims"].__dict__
-            identifier_uris = ", ".join(app["identifier_uris"])
-            if len(app["owners"]) > 0:
-                owners = ", ".join(process_owners(app["owners"]))
-            else:
-                owners = None
             if (
-                "saml2_token" in optional_claims
-                and len(optional_claims["saml2_token"]) > 0
+                    "saml2_token" in optional_claims
+                    and len(optional_claims["saml2_token"]) > 0
             ):
                 logger.debug(f"SAML2 Token for {app['display_name']}")
                 saml_apps.append(
@@ -93,6 +102,7 @@ def categorize_apps(apps):
                         "Identifier URI": identifier_uris,
                     }
                 )
+
     return saml_apps, oauth_apps
 
 
@@ -113,15 +123,21 @@ def document_enterprise_apps(apps, args=None, confluence=None, confluence_page_i
     app_table = []
     for app in apps:
         app = app.__dict__
+        # if "Beekeeper Prod" == app["display_name"]:
+        #    from pprint import pprint
+        #    pprint(app)
+        #    break
         if "optional_claims" in app and app["optional_claims"]:
             optional_claims = app["optional_claims"].__dict__
             if (
-                "saml2_token" in optional_claims
-                and len(optional_claims["saml2_token"]) > 0
+                    "saml2_token" in optional_claims
+                    and len(optional_claims["saml2_token"]) > 0
             ):
                 sso = "SAML"
             else:
                 sso = "Oauth"
+        elif "identifier_uris" in app and "saml" in app["identifier_uris"]:
+            sso = "SAML"
         else:
             sso = False
         if len(app["owners"]) > 0:
